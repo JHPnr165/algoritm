@@ -1,0 +1,158 @@
+/**
+ * Priority queue. Class is using DynamicArray to store values.
+ * This class keeps array sorted as min-heap array.
+ * You can put in values in any order but it returns always
+ * minimum value in the array.
+ * 
+ * @author Marko Tandre 123650
+ *
+ */
+public class PriorityQueue {
+	//Dynamic array for priority queue.
+	private DynamicArray array;
+	//Size of heap array. First free position index in heap array to put Node in.
+	private int arraySize = 4, freePosition = 1;
+
+	/**
+	 * Method that creates DynamicArray.
+	 */
+	public void create() {
+		array = new DynamicArray();
+		array.create(arraySize);
+		for(int i = 0; i < arraySize; i++) {array.add(null);} //DynamicArray counts only Node adds.
+	}
+
+	/**
+	 * Method to add number to min-heap array and put it in correct position.
+	 */
+	public void enqueue(Node nodeToAdd) {
+		int currentPosition = freePosition;
+		array.put(freePosition, nodeToAdd);
+		if(freePosition != 1) {
+			while(parent(currentPosition).cost > nodeToAdd.cost) {
+				exchange(currentPosition / 2, currentPosition);
+				currentPosition /= 2;
+				if(currentPosition == 1) {
+					break;
+				}
+			}
+		}
+		
+		if(freePosition + 1 == arraySize) {
+			for(int i = 0; i < arraySize; i++) { //DynamicArray counts only number adds.
+				array.add(null);
+			}
+			arraySize *= 2;
+		}
+		freePosition++;
+	}
+
+	/**
+	 * Method to get minimum number from heap array and delete it.
+	 */
+	public Node dequeue() {
+		Node nodeToReturn = array.get(1);
+		int currentPosition = 1;
+		array.put(1, array.get(freePosition - 1));
+		array.put(freePosition - 1, null);
+		freePosition--;
+		int rightChild;
+		int leftChild;
+		while(hasLeftChild(currentPosition)) {
+			if(!hasRightChild(currentPosition)) {
+				leftChild = leftChild(currentPosition).cost;
+				rightChild = Integer.valueOf(leftChild);
+				rightChild += 1;
+			} else {
+				leftChild = leftChild(currentPosition).cost;
+				rightChild = rightChild(currentPosition).cost;
+			}
+			if(rightChild < leftChild 
+					&& rightChild < array.get(currentPosition).cost) {
+				exchange(currentPosition, (currentPosition * 2) + 1);
+				currentPosition = (currentPosition * 2) + 1;
+			} else if(leftChild < rightChild
+					&& leftChild < array.get(currentPosition).cost) {
+				exchange(currentPosition, currentPosition * 2);
+				currentPosition *= 2;
+			} else if(leftChild == rightChild
+					&& rightChild < array.get(currentPosition).cost) {
+				exchange(currentPosition, currentPosition * 2);
+				currentPosition *= 2;
+			} else {break;}
+		}
+		return nodeToReturn;
+	}
+
+	/**
+	 * Method for checking if array consists values or not.
+	 * 
+	 * @return returns true if array is empty.
+	 */
+	public boolean isEmpty() {
+		return freePosition == 1;
+	}
+
+	/**
+	 * Method to change number positions in array.
+	 * 
+	 * @param toExchange Position of number in array to exchange.
+	 * @param exchangeWith Position of number in array to exchange with.
+	 */
+	private void exchange(int toExchange, int exchangeWith) {
+		Node toExchangeNode = array.get(toExchange);
+		Node exchangeWithNode = array.get(exchangeWith);
+		array.put(toExchange, exchangeWithNode);
+		array.put(exchangeWith, toExchangeNode);
+	}
+
+	/**
+	 * Method to get left child value.
+	 * 
+	 * @param indexOfParent Position of parent in array.
+	 * @return Value of given parent left child.
+	 */
+	private Node leftChild(int indexOfParent) {
+		return array.get(indexOfParent * 2);
+	}
+
+	/**
+	 * Method to get right child value.
+	 * 
+	 * @param indexOfParent Position of parent in array.
+	 * @return Value of given parent right child.
+	 */
+	private Node rightChild(int indexOfParent) {
+		return array.get((indexOfParent * 2) + 1);
+	}
+
+	/**
+	 * Method to get value of parent.
+	 * 
+	 * @param indexOfChild Position of child in array.
+	 * @return Value of given child parent.
+	 */
+	private Node parent(int indexOfChild) {
+		return array.get(indexOfChild / 2);
+	}
+
+	/**
+	 * Method to test if parent has left child.
+	 * 
+	 * @param indexOfParent Index of parent in array.
+	 * @return Returns true if has left child.
+	 */
+	private boolean hasLeftChild(int indexOfParent) {
+		return indexOfParent * 2 < freePosition;
+	}
+
+	/**
+	 * Method to test if parent has right child.
+	 * 
+	 * @param indexOfParent Index of parent in array.
+	 * @return Returns true if has right child.
+	 */
+	private boolean hasRightChild(int indexOfParent) {
+		return (indexOfParent * 2) + 1 < freePosition;
+	}
+}

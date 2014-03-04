@@ -1,0 +1,89 @@
+/**
+ * Dynamic array.
+ * 
+ * @author Marko Tandre
+ *
+ */
+public class DynamicArray {
+	//Array where value will be held.
+	private Node[] array;
+	//variable for storing size of the array.
+	private int index = 0;
+	//variable for counting values.
+	private int nodesCount = 0;
+
+	/**
+	 * Method that creates array where Nodes will be held.
+	 * 
+	 * @param arrayLength length of the array that will be created
+	 */
+	public void create(int arrayLength) {
+		array = new Node[arrayLength];
+		index = arrayLength;
+	}
+
+	/**
+	 * Method to add new Node to array.
+	 * 
+	 * @param nodeToAdd Node that will be stored.
+	 */
+	public void add(Node nodeToAdd) {
+		if(nodesCount + 1 < index) {
+			array[nodesCount] = nodeToAdd;
+		} else {
+			array[nodesCount] = nodeToAdd;
+			Node[] tmpArray = array;
+			array = new Node[index * 2];
+			index *= 2;
+			System.arraycopy(tmpArray, 0, array, 0, nodesCount + 1);
+		}
+		nodesCount++;
+	}
+
+	/**
+	 * Method that removes last Node from array and returns it.
+	 * 
+	 * @return last value in array.
+	 */
+	public Node rem() {
+		Node tmpNode = array[nodesCount - 1];
+		array[nodesCount - 1] = null;
+		nodesCount--;
+		if(index >= nodesCount * 4 && nodesCount != 0) {
+			Node[] tmpArray = array; //oli if'i ees!
+//			array = new int[index / 2]; //lisatud!
+			System.arraycopy(array, 0, tmpArray, 0, nodesCount);
+			index /= 2;
+		}
+		return tmpNode;
+	}
+
+	/**
+	 * Method that returns Node at given index.
+	 * 
+	 * @param nodeToGet index of the Node to return from array.
+	 * @return Node at given position in array.
+	 */
+	public Node get(int nodeToGet) {
+		return array[nodeToGet];
+	}
+
+	/**
+	 * Method that changes Node at given position in array.
+	 * 
+	 * @param indexToChange index of Node to change
+	 * @param nodeToSave Node to be saved at given index.
+	 */
+	public void put(int indexToChange, Node nodeToSave) {
+		array[indexToChange] = nodeToSave;
+	}
+
+	/**
+	 * Method that return count of Nodes in array.
+	 * 
+	 * @return Node count in array.
+	 */
+	public int len() {
+		return nodesCount;
+	}
+}
